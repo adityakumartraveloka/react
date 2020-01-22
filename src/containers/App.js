@@ -1,30 +1,51 @@
 import React, { Component } from 'react';
 import './App.css';
-import styled from 'styled-components'
-import Person from './Persons/Person'
+import Persons from '../components/Persons/Persons';
+import Cockpit from '../components/Cockpit/Cockpit';
 
-const StyledButton = styled.button`
-    background-color: ${props => props.alt ? 'red' : 'green'};
-    color: white;
-    font: inherit;
-    border: 2px solid blue;
-    padding: 8px;
-    cursor: pointer;
-    &:hover {
-      background-color: ${props => props.alt ? 'salmon' : 'lightgreen' };
-      color: black;
-    };  
-`;
 
 class App extends Component {
+  constructor(props){
+    super(props);
+    console.log('[App.js] constructor');
+  }
+
   state = {
     persons: [
       { id: 'sdf', name: 'Aditya', age: '20' },
       { id: 'sadg', name: 'Ankush', age: '22' },
       { id: 'lh', name: 'Sourav', age: '24' },
       { id: 'i;uhiuh', name: 'Zen', age: '18'}
-    ]
+    ],
+    showPersons: 'false',
+    showCockpit: 'true'
   };
+
+  static getDerivedStateFromProps(props, state) {
+    console.log('[App.js] getDerivedStateFromProps', props);
+    return state;
+  }
+
+  // componetWillMount() {
+  //   console.log('[App.js] componentWillMount');
+  // }
+
+  componentDidMount() {
+    console.log('[App.js] componentDidMount');
+  }
+
+  shouldComponentUpdate(nextProps, nextState){
+    console.log('[App.js] shouldComponentUpdate');
+    return true;
+  }
+
+  componentWillUnmount() {
+    console.log('[App.js] componentWillUnmount');
+  }
+
+  componentDidUpdate() {
+    console.log('[App.js] componentDidMount');
+  }
 
   // switchNameHandler = (newName) => {
   //   // console.log("The button has clicked");
@@ -71,6 +92,8 @@ class App extends Component {
 
   render() {
 
+    console.log('[App.js] render');
+
     const style = {
       backgroundColor: 'green',
       font: 'inherit',
@@ -88,18 +111,15 @@ class App extends Component {
     if(this.state.showPersons){
       persons = (
         <div>
-          {
-            this.state.persons.map((person, index) => {
-              return <Person 
-              click={() => this.deletePersonHander(index)} 
-              name={person.name} 
-              age={person.age}
-              key={person.id}
-              changed={(event) => this.changeNameHandler(event, person.id)}/>
-            })
-          }
+          <Persons
+            title={this.props.title}
+            persons={this.state.persons}
+            clicked={this.deletePersonHander}
+            changed={this.changeNameHandler}  
+          />
         </div>
       );
+
       style.backgroundColor = 'red'
       style[':hover'] = {
         backgroundColor: 'salmon',
@@ -109,11 +129,21 @@ class App extends Component {
 
     return (
       <div className="App">
-        <h1>This is the react demo.</h1>
-        <StyledButton alt={this.state.showPersons} onClick={this.togglePersonsHandler}>
-          Toggle
-        </StyledButton>
-            {persons}
+
+        <button onClick={ () => {
+          this.setState({showCockpit: false})
+        }}>Remove Cockpit</button>
+
+        { 
+        this.state.showCockpit ? 
+          <Cockpit
+            persons={this.state.persons}
+            title={this.props.appTitle} 
+            showPersons={this.state.showPersons}
+            clicked={this.togglePersonsHandler}
+          /> : null 
+        }
+          {persons}
       </div>
     );
   }
